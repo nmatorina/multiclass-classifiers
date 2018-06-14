@@ -1,0 +1,72 @@
+
+#File available at: https://www.kaggle.com/ruslankl/mice-protein-expression/data
+df <- read.csv(".../Downloads/Data_Cortex_Nuclear.csv")
+
+head(df)
+
+#Create training and testing set
+df$randu <- runif(1080, 0, 1)
+df.train <- df[df$randu < .4,]
+df.test <- df[df$randu >= .4,]
+
+#Random Forests Model
+set.seed(111)
+
+#Impute missing data with random forests
+df.imputed.train <- rfImpute(class ~ DYRK1A_N + ITSN1_N + BDNF_N+ NR1_N + NR2A_N + 
+                          pAKT_N + pBRAF_N + pCAMKII_N + pCREB_N + pELK_N +
+                          pERK_N + pJNK_N + PKCA_N + pMEK_N + pNR1_N + pNR2A_N +
+                          pNR2B_N + pPKCAB_N + pRSK_N + AKT_N + BRAF_N +
+                          CAMKII_N + CREB_N + ELK_N + ERK_N + GSK3B_N + JNK_N + 
+                          MEK_N + TRKA_N + RSK_N + APP_N + Bcatenin_N + SOD1_N +
+                          MTOR_N + P38_N + pMTOR_N + DSCR1_N + AMPKA_N + NR2B_N +
+                          pNUMB_N + RAPTOR_N + TIAM1_N + pP70S6_N + NUMB_N + 
+                          pP70S6_N + pGSK3B_N + pPKCG_N + CDK5_N + S6_N + ADARB1_N + 
+                          AcetylH3K9_N + RRP1_N + BAX_N + ARC_N + ERBB4_N + nNOS_N + 
+                          Tau_N + GFAP_N + GluR3_N + GluR4_N + IL1B_N + P3525_N + 
+                          pCASP9_N + PSD95_N + SNCA_N + Ubiquitin_N + pGSK3B_Tyr216_N + 
+                          SHH_N + BAD_N + BCL2_N + pS6_N + pCFOS_N + SYP_N + H3AcK18_N + 
+                          EGR1_N + H3MeK4_N + CaNA_N, data = df.train)
+
+df.imputed.test <- rfImpute(class ~ DYRK1A_N + ITSN1_N + BDNF_N+ NR1_N + NR2A_N + 
+                         pAKT_N + pBRAF_N + pCAMKII_N + pCREB_N + pELK_N +
+                         pERK_N + pJNK_N + PKCA_N + pMEK_N + pNR1_N + pNR2A_N +
+                         pNR2B_N + pPKCAB_N + pRSK_N + AKT_N + BRAF_N +
+                         CAMKII_N + CREB_N + ELK_N + ERK_N + GSK3B_N + JNK_N + 
+                         MEK_N + TRKA_N + RSK_N + APP_N + Bcatenin_N + SOD1_N +
+                         MTOR_N + P38_N + pMTOR_N + DSCR1_N + AMPKA_N + NR2B_N +
+                         pNUMB_N + RAPTOR_N + TIAM1_N + pP70S6_N + NUMB_N + 
+                         pP70S6_N + pGSK3B_N + pPKCG_N + CDK5_N + S6_N + ADARB1_N + 
+                         AcetylH3K9_N + RRP1_N + BAX_N + ARC_N + ERBB4_N + nNOS_N + 
+                         Tau_N + GFAP_N + GluR3_N + GluR4_N + IL1B_N + P3525_N + 
+                         pCASP9_N + PSD95_N + SNCA_N + Ubiquitin_N + pGSK3B_Tyr216_N + 
+                         SHH_N + BAD_N + BCL2_N + pS6_N + pCFOS_N + SYP_N + H3AcK18_N + 
+                         EGR1_N + H3MeK4_N + CaNA_N, data = df.test)
+
+#Create random forest model
+df.rf <- randomForest(class ~ DYRK1A_N + ITSN1_N + BDNF_N+ NR1_N + NR2A_N + 
+                        pAKT_N + pBRAF_N + pCAMKII_N + pCREB_N + pELK_N +
+                        pERK_N + pJNK_N + PKCA_N + pMEK_N + pNR1_N + pNR2A_N +
+                        pNR2B_N + pPKCAB_N + pRSK_N + AKT_N + BRAF_N +
+                        CAMKII_N + CREB_N + ELK_N + ERK_N + GSK3B_N + JNK_N + 
+                        MEK_N + TRKA_N + RSK_N + APP_N + Bcatenin_N + SOD1_N +
+                        MTOR_N + P38_N + pMTOR_N + DSCR1_N + AMPKA_N + NR2B_N +
+                        pNUMB_N + RAPTOR_N + TIAM1_N + pP70S6_N + NUMB_N + 
+                        pP70S6_N + pGSK3B_N + pPKCG_N + CDK5_N + S6_N + ADARB1_N + 
+                        AcetylH3K9_N + RRP1_N + BAX_N + ARC_N + ERBB4_N + nNOS_N + 
+                        Tau_N + GFAP_N + GluR3_N + GluR4_N + IL1B_N + P3525_N + 
+                        pCASP9_N + PSD95_N + SNCA_N + Ubiquitin_N + pGSK3B_Tyr216_N + 
+                        SHH_N + BAD_N + BCL2_N + pS6_N + pCFOS_N + SYP_N + H3AcK18_N + 
+                        EGR1_N + H3MeK4_N + CaNA_N, data = df.imputed.train, ntree = 901,
+                       importance = TRUE)
+
+#Check if error is stable
+plot(df.rf)
+
+#Identify most important proteins
+varImpPlot(df.rf)
+
+#Accuracy on test set
+df.imputed.test$pred.class.rf <- predict(df.rf, df.imputed.test)
+table(df.imputed.test$class, df.imputed.test$pred.class.rf)
+prop.table(table(df.imputed.test$class, df.imputed.test$pred.class.rf),1)
